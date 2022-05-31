@@ -32,7 +32,7 @@ int main(){
    
    //for循环输出一组数
    for(int i = 0; i < 5; i++){
-      printf("i : %d\n", i);
+      printf("i : %d, pid : %d\n", i, getpid());
       sleep(1);
    }
 
