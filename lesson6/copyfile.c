@@ -37,7 +37,7 @@ int main(){
     }
     //2.create a new file
     int destfd = open("copy.txt", O_WRONLY | O_CREAT,0664);
-    if(srcfd == -1){
+    if(destfd == -1){
         perror("open");
         return -1;
     }
