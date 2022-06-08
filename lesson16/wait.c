@@ -12,14 +12,6 @@
 
    调用wait函数的进程会被挂起（阻塞），直到它的一个子进程退出或者收到一个不能被忽略的信号时才被唤醒（相当于继续往下执行）
    如果没有子进程了，函数立刻返回-1；如果子进程都已经结束了，也会立即返回-1
-
-   pid_t waitpid(pid_t pid, int *wstatus, int options);
-      功能：
-      参数：
-      返回值：
-         -成功：返回状态改变的子进程的进程id，如果制定了WNOHANG， 并且存在一个或多个由pid指定的子进程，但其状态尚未更改，返回0
-         -失败：返回-1
-
 */
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -30,7 +22,7 @@ int main(){
    // 有一个父进程，创建5个子进程
    pid_t pid;
    //创建5个子进程
-   for(int i = 0; i < 2; i++){
+   for(int i = 0; i < 5; i++){
       pid = fork();
       if(pid == 0){
          break;
@@ -42,10 +34,22 @@ int main(){
       while(1){
          printf("I'm parent process, pid : %d\n", getpid());
 
-         int ret = wait(NULL);
+         //int ret = wait(NULL);
+         int st;
+         int ret = wait(&st);
          if(ret == -1){
             break;
          }
+
+         if(WIFEXITED(st)){
+            //是否是正常退出
+            printf("退出的状态码：%d\n", WEXITSTATUS(st));
+         }
+         if(WIFSIGNALED(st)){
+            //是否是异常终止
+            printf("被 %d 号信号干掉了\n", WTERMSIG(st));
+         }
+
          printf("child die, pid = %d\n", ret);
 
          sleep(1);
@@ -56,6 +60,7 @@ int main(){
          printf("I'm child process, pid : %d\n", getpid());
          sleep(1);
       }
+      exit(0);
    }
 
    return 0;
