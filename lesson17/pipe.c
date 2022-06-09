@@ -36,32 +36,42 @@ int main(){
       //父进程
       
       printf("I am parent process, pid : %d\n", getpid());
+
+      //关闭写端
+      close(pipefd[1]);
+
       char buf[1024] = {0};
       while(1){
          //从管道读取数据
          int len = read(pipefd[0], buf, sizeof(buf));
-         printf("child recv : %s, pid : %d\n", buf, getpid());
+         printf("parent recv : %s, pid : %d\n", buf, getpid());
 
          //向管道写入数据
-         char* str = "hello, I am parent";
-         write(pipefd[1], str ,strlen(str));
-         sleep(1);
+         // char* str = "hello, I am parent";
+         // write(pipefd[1], str ,strlen(str));
+         // sleep(1);
+         // bzero(buf, 1024);
       }
 
    }else if(pid == 0){
       //子进程
       //往管道写入数据
       printf("I am child process, pid : %d\n", getpid());
+
+      //关闭读端
+      close(pipefd[0]);
+
       char buf[1024] = {0};
       while(1){
          //向管道写入数据
-         char* str = "hello, I am child";
+         char* str = "hello, I am child\n";
          write(pipefd[1], str ,strlen(str));
-         sleep(1);
+         //sleep(1);
 
-         //从管道读取数据
-         int len = read(pipefd[0], buf, sizeof(buf));
-         printf("parent recv : %s, pid : %d\n", buf, getpid());
+         // 从管道读取数据
+         // int len = read(pipefd[0], buf, sizeof(buf));
+         // printf("child recv : %s, pid : %d\n", buf, getpid());
+         // bzero(buf, 1024);
       }
 
    }
