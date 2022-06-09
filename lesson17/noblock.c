@@ -22,6 +22,12 @@
 #include <stdlib.h>
 #include <string.h>
 //子进程发送数据给父进程，父进程读取数据输出
+/*
+   设置管道非阻塞
+   int flags = fcntl(fd[0], F_GETFL); //获取原来的flag
+   flags |= O_NONBLOCK;          //修改flag
+   fcntl(fd[0], F_SETFL, flags); //设置新的flag
+*/
 int main(){
 
    //fork之前创建管道
@@ -43,16 +49,16 @@ int main(){
       close(pipefd[1]);
 
       char buf[1024] = {0};
+      int flags = fcntl(pipefd[0], F_GETFL); //获取原来的flag
+      flags |= O_NONBLOCK;          //修改flag
+      fcntl(pipefd[0], F_SETFL, flags); //设置新的flag
       while(1){
          //从管道读取数据
          int len = read(pipefd[0], buf, sizeof(buf));
+         printf("len : %d\n", len);
          printf("parent recv : %s, pid : %d\n", buf, getpid());
-
-         //向管道写入数据
-         // char* str = "hello, I am parent";
-         // write(pipefd[1], str ,strlen(str));
-         // sleep(1);
-         // bzero(buf, 1024);
+         memset(buf, 0, 1024);
+         sleep(1);
       }
 
    }else if(pid == 0){
@@ -66,14 +72,10 @@ int main(){
       char buf[1024] = {0};
       while(1){
          //向管道写入数据
-         char* str = "hello, I am child\n";
+         char* str = "hello, I am child";
          write(pipefd[1], str ,strlen(str));
-         //sleep(1);
-
-         // 从管道读取数据
-         // int len = read(pipefd[0], buf, sizeof(buf));
-         // printf("child recv : %s, pid : %d\n", buf, getpid());
-         // bzero(buf, 1024);
+         bzero(buf, 1024);
+         sleep(10);
       }
 
    }
