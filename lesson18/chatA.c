@@ -30,7 +30,6 @@ int main() {
             exit(0);
         }
     }
-
     // 2.以只写的方式打开管道fifo1
     int fdw = open("fifo1", O_WRONLY);
     if(fdw == -1) {
