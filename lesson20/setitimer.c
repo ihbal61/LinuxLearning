@@ -3,7 +3,7 @@
     int setitimer(int which, const struct itimerval *new_value,
                         struct itimerval *old_value);
     
-        - 功能：设置定时器（闹钟）。可以替代alarm函数。精度微妙us，可以实现周期性定时
+        - 功能：设置定时器（闹钟）。可以替代alarm函数。精度微秒us，可以实现周期性定时
         - 参数：
             - which : 定时器以什么时间计时
               ITIMER_REAL: 真实时间，时间到达，发送 SIGALRM   常用
@@ -56,7 +56,7 @@ int main() {
         perror("setitimer");
         exit(0);
     }
-
+    
     getchar();
 
     return 0;
