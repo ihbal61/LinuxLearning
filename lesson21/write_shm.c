@@ -12,7 +12,7 @@ int main(){
     //2.和当前进程关联
     void * ptr = shmat(shmid, NULL, 0);
 
-    char * str = "hello, world\n";
+    char * str = "hello, world";
 
     //3.写数据
     memcpy(ptr, str, strlen(str) + 1);

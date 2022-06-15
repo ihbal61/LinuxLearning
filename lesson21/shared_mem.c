@@ -76,7 +76,7 @@ key_t ftok(const char *pathname, int proj_id);
 
     共享内存和内存映射的区别
     1.共享内存可以直接创建，内存映射需要磁盘文件（匿名映射除外）
-    2.共享内存效果更高
+    2.共享内存效率更高
     3.内存
         所有的进程操作的是同一块共享内存。
         内存映射，每个进程在自己的虚拟地址空间中有一个独立的内存。
@@ -99,32 +99,3 @@ key_t ftok(const char *pathname, int proj_id);
         3.shmdt() 分离共享内存段 (分离后共享内存段仍存在，但进程无法引用这一空间)
         4.shmctl() 删除共享内存段，只有当所有附加内存段的进程都与之分离后，这段内存才会销毁
 */
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdio.h>
-int main(){
-
-    //1.创建共享内存
-    int shmid = shmget(100, 4096, IPC_CREAT | 0664);
-
-    //2.和当前进程关联
-    void * ptr = shmat(shmid, NULL, 0);
-
-    char * str = "hello, world";
-
-    //3.写数据
-    memcpy(ptr, str, strlen(str) + 1);
-
-    printf("按任意键继续\n");
-    getchar();
-
-    //4.解除关联
-    shdmt(ptr);
-
-    //5.删除共享内存
-    shmctl(shmid, IPC_RMID, NULL);
-
-    return 0;
-}
