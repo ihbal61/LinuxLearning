@@ -9,7 +9,7 @@
 
 struct sockInfo {
     int fd; // 通信的文件描述符
-    struct sockaddr_in addr;
+    sockaddr_in addr;
     pthread_t tid;  // 线程号
 };
 
