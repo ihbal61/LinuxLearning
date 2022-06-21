@@ -86,10 +86,10 @@ int main() {
     // 循环等待客户端连接，一旦一个客户端连接进来，就创建一个子线程进行通信
     while(1) {
 
-        struct sockaddr_in cliaddr;
+        sockaddr_in cliaddr;
         socklen_t len = sizeof(cliaddr);
         // 接受连接
-        int cfd = accept(sockfd, (struct sockaddr*)&cliaddr, &len);
+        int cfd = accept(sockfd, (sockaddr*)&cliaddr, &len);
 
         struct sockInfo * pinfo;
         for(int i = 0; i < max; i++) {
