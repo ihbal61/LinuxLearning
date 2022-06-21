@@ -10,7 +10,7 @@
 struct sockInfo {
     int fd; // 通信的文件描述符
     sockaddr_in addr;
-    pthread_t tid;  // 线程号
+    pthread_t tid;  // 线 程号
 };
 
 sockInfo sockinfos[128];
@@ -91,7 +91,7 @@ int main() {
         // 接受连接
         int cfd = accept(sockfd, (sockaddr*)&cliaddr, &len);
 
-        struct sockInfo * pinfo;
+        sockInfo * pinfo;
         for(int i = 0; i < max; i++) {
             // 从这个数组中找到一个可以用的sockInfo元素
             if(sockinfos[i].fd == -1) {
