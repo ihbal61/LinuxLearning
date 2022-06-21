@@ -32,7 +32,7 @@ int main(){
    }else if(pid == 0){
       //子进程
       //execl("hello", "hello", NULL);
-      execl("/usr/bin/ps","ps", "aux", NULL);
+      execl("/usr/bin/ping","ping", "127.0.0.1", NULL);
       printf("I am child process, pid : %d\n", getpid());
    }
    
