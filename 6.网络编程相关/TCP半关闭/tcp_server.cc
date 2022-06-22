@@ -21,16 +21,25 @@ int main(int argc, char *argv[]) {
    sckaddr.sin_family = PF_INET;
    sckaddr.sin_addr.s_addr = INADDR_ANY;
    sckaddr.sin_port = htons(9999);
+
+    //int optval = 1;
+    //setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
+    int optval = 1;
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
+
    int ret = bind(sockfd, (sockaddr *)&sckaddr, sizeof(sckaddr));
    if(ret < 0) {
-      printf("bind failed: %d\n", errno);
+      perror("bind");
+      //printf("bind failed: %d\n", errno);
       return -1;
    }
 
    //监听
    ret = listen(sockfd, 128);
    if(ret < 0){
-      printf("listen failed: %d\n", errno);
+    perror("listen");
+      //printf("listen failed: %d\n", errno);
       return -1;
    }
 
@@ -42,7 +51,6 @@ int main(int argc, char *argv[]) {
         perror("accpet");
         return -1;
     }
-
     // 获取客户端信息
     char cliIp[16];
     inet_ntop(AF_INET, &cliaddr.sin_addr.s_addr, cliIp, sizeof(cliIp));
@@ -75,7 +83,8 @@ int main(int argc, char *argv[]) {
         // 大写字符串发给客户端
         ret = send(cfd, recvBuf, strlen(recvBuf) + 1, 0);
         if(ret == -1) {
-            printf("failed to send: %d", errno);
+            perror("send");
+            //printf("failed to send: %d", errno);
             return -1;
         }
     }
