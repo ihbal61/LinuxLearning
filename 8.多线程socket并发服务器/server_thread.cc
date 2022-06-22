@@ -10,7 +10,15 @@
 struct sockInfo {
     int fd; // 通信的文件描述符
     sockaddr_in addr;
-    pthread_t tid;  // 线 程号
+    pthread_t tid;  // 线程号
+    void operator=(const sockInfo& sock){
+        this->addr = sock.addr;
+        this->fd = sock.fd;
+        this->tid = sock.tid;
+    }
+    void operator=(const sockaddr_in& add){
+        this->addr = add;
+    }
 };
 
 sockInfo sockinfos[128];
@@ -76,16 +84,17 @@ int main() {
     // 初始化数据
     int max = sizeof(sockinfos) / sizeof(sockinfos[0]);
     for(int i = 0; i < max; i++) {
-        bzero(&sockinfos[i], sizeof(sockinfos[i]));
-        sockinfos[i].fd = -1;
-        sockinfos[i].tid = -1;
+        // bzero(&sockinfos[i], sizeof(sockinfos[i]));
+        // sockinfos[i].fd = -1;
+        // sockinfos[i].tid = -1;
+        sockinfos[i] = sockInfo( {-1, {0}, (pthread_t)-1});
     }
 
     std::cout << "Server started, listen on for any connection request" << std::endl;
 
     // 循环等待客户端连接，一旦一个客户端连接进来，就创建一个子线程进行通信
     while(1) {
-
+        
         sockaddr_in cliaddr;
         socklen_t len = sizeof(cliaddr);
         // 接受连接
@@ -105,12 +114,13 @@ int main() {
         }
 
         pinfo->fd = cfd;
-        memcpy(&pinfo->addr, &cliaddr, len);
+        pinfo -> addr = cliaddr;
+        // memcpy(&pinfo->addr, &cliaddr, len);
 
         // 创建子线程
-        pthread_create(&pinfo->tid, NULL, working, pinfo);
+        pthread_create(&pinfo -> tid, NULL, working, pinfo);
 
-        pthread_detach(pinfo->tid);
+        pthread_detach(pinfo -> tid);
     }
 
     close(sockfd);

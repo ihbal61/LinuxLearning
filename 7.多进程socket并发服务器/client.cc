@@ -6,23 +6,8 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
-#include <wait.h>
 
-void recyleChild(int arg) {
-    while(1) {
-        int ret = waitpid(-1, NULL, WNOHANG);
-        if(ret == -1) {
-            // 所有的子进程都回收了
-            break;
-        }else if(ret == 0) {
-            // 还有子进程活着
-            break;
-        } else if(ret > 0){
-            // 被回收了
-            printf("子进程 %d 被回收了\n", ret);
-        }
-    }
-}
+
 
 int main() {
 
