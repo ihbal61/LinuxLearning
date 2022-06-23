@@ -11,37 +11,35 @@ int main(int argc, char *argv[]) {
     // 创建socket
     int sockfd = socket(PF_INET, SOCK_STREAM, 0);
 
-   if(sockfd < 0) {
+    if(sockfd < 0) {
         printf("create socket failed: %d\n", errno);
         return -1;
     }
 
     //绑定端口
-   sockaddr_in sckaddr;
-   sckaddr.sin_family = PF_INET;
-   sckaddr.sin_addr.s_addr = INADDR_ANY;
-   sckaddr.sin_port = htons(9999);
+    sockaddr_in sckaddr;
+    sckaddr.sin_family = PF_INET;
+    sckaddr.sin_addr.s_addr = INADDR_ANY;
+    sckaddr.sin_port = htons(9999);
 
-    //int optval = 1;
-    //setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-
+    //设置端口为复用
     int optval = 1;
     setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval));
 
-   int ret = bind(sockfd, (sockaddr *)&sckaddr, sizeof(sckaddr));
-   if(ret < 0) {
-      perror("bind");
-      //printf("bind failed: %d\n", errno);
-      return -1;
-   }
+    int ret = bind(sockfd, (sockaddr *)&sckaddr, sizeof(sckaddr));
+    if(ret < 0) {
+        perror("bind");
+        //printf("bind failed: %d\n", errno);
+        return -1;
+    }
 
-   //监听
-   ret = listen(sockfd, 128);
-   if(ret < 0){
-    perror("listen");
-      //printf("listen failed: %d\n", errno);
-      return -1;
-   }
+    //监听
+    ret = listen(sockfd, 128);
+    if(ret < 0){
+        perror("listen");
+        //printf("listen failed: %d\n", errno);
+        return -1;
+    }
 
     // 接收客户端连接
     struct sockaddr_in cliaddr;
