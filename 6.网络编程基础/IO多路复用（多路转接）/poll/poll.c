@@ -41,7 +41,7 @@ int main() {
             continue;
         } else if(ret > 0) {
             // 说明检测到了有文件描述符的对应的缓冲区的数据发生了改变
-            if(fds[0].revents & POLLIN) {
+            if(fds[0].revents & POLLIN) {// 位运算
                 // 表示有新的客户端连接进来了
                 struct sockaddr_in cliaddr;
                 int len = sizeof(cliaddr);
