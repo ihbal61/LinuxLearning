@@ -1,4 +1,4 @@
-#include <stdio.h>
+ #include <stdio.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -9,16 +9,29 @@ int main() {
 
     // 创建socket
     int lfd = socket(PF_INET, SOCK_STREAM, 0);
+    if(lfd < 0){
+        perror("socket");
+        return -1;
+    }
+
     struct sockaddr_in saddr;
     saddr.sin_port = htons(9999);
-    saddr.sin_family = AF_INET;
+    saddr.sin_family = PF_INET;
     saddr.sin_addr.s_addr = INADDR_ANY;
 
     // 绑定
-    bind(lfd, (struct sockaddr *)&saddr, sizeof(saddr));
+    int res = bind(lfd, (struct sockaddr *)&saddr, sizeof(saddr));
+    if(res < 0){
+        perror("bind");
+        return -1;
+    }
 
     // 监听
-    listen(lfd, 8);
+    res = listen(lfd, 8);
+    if(res < 0){
+        perror("listen");
+        return -1;
+    }
 
     // 创建一个fd_set的集合，存放的是需要检测的文件描述符
     fd_set rdset, tmp;
@@ -44,6 +57,11 @@ int main() {
                 struct sockaddr_in cliaddr;
                 int len = sizeof(cliaddr);
                 int cfd = accept(lfd, (struct sockaddr *)&cliaddr, &len);
+
+                char cliIp[16];
+                inet_ntop(PF_INET, &cliaddr.sin_addr.s_addr, cliIp, sizeof(cliIp));
+                unsigned short cliPort = ntohs(cliaddr.sin_port);
+                printf("New connection, IP is : %s, port is %d\n", cliIp, cliaddr.sin_port);
 
                 // 将新的文件描述符加入到集合中
                 FD_SET(cfd, &rdset);

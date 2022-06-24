@@ -10,31 +10,29 @@ I/O 多路复用使得程序能同时监听多个文件描述符，能够提高�
       b.函数对文件描述符的检测的操作是由内核完成的   
    3. 在返回时，它会告诉进程有多少（哪些）描述符要进行I/O操作。   
 ```c++
-   // sizeof(fd_set) = 128 1024
+   // sizeof(fd_set) = 128字节 1024位
    #include <sys/time.h>
    #include <sys/types.h>
    #include <unistd.h>
    #include <sys/select.h>
    int select(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout);
       - 参数：
-         - nfds : 委托内核检测的最大文件描述符的值 + 1
+         - nfds : 委托内核检测的最大文件描述符的值 + 1， 因为文件描述符从0计数， 最大值+1才能取到最大的那个文件描述符
          - readfds : 要检测的文件描述符的读的集合，委托内核检测哪些文件描述符的读的属性
-         - 一般检测读操作
-         - 对应的是对方发送过来的数据，因为读是被动的接收数据，检测的就是读缓冲
-         区
-         - 是一个传入传出参数
+            - 一般检测读操作
+            - 对应的是对方发送过来的数据，因为读是被动的接收数据，检测的就是读缓冲区
+            - 是一个传入传出参数
          - writefds : 要检测的文件描述符的写的集合，委托内核检测哪些文件描述符的写的属性
-         - 委托内核检测写缓冲区是不是还可以写数据（不满的就可以写）
+            - 委托内核检测写缓冲区是不是还可以写数据（不满的就可以写）
          - exceptfds : 检测发生异常的文件描述符的集合
          - timeout : 设置的超时时间
-
-      struct timeval {
-      long tv_sec; /* seconds */
-      long tv_usec; /* microseconds */
-      };
-      - NULL : 永久阻塞，直到检测到了文件描述符有变化
-      - tv_sec = 0 tv_usec = 0， 不阻塞
-      - tv_sec > 0 tv_usec > 0， 阻塞对应的时间
+            struct timeval {
+            long tv_sec; /* seconds */
+            long tv_usec; /* microseconds */
+            };
+            - NULL : 永久阻塞，直到检测到了文件描述符有变化
+            - tv_sec = 0 tv_usec = 0， 不阻塞
+            - tv_sec > 0 tv_usec > 0， 阻塞对应的时间
       - 返回值 :
          - -1 : 失败
          - >0(n) : 检测的集合中有n个文件描述符发生了变化
@@ -47,6 +45,13 @@ I/O 多路复用使得程序能同时监听多个文件描述符，能够提高�
    void FD_SET(int fd, fd_set *set);
    // fd_set一共有1024 bit, 全部初始化为0
    void FD_ZERO(fd_set *set);
+```
+```
+   缺点：   
+      1.每次调用select，都要将fd_set从用户态拷贝到内核态，无差别轮询 时间复杂度位O(n)， n很大时开销会很大;   
+      2.同时每次调用select都需要在内核便利传递进来的所有fd，开销较大;   
+      3.select 支持的文件描述符上限默认为128字节， 1024位;   
+      4.fd_set不能重复利用，每次都需要重置。   
 ```
 
 ## ***poll***
