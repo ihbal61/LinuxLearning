@@ -87,7 +87,7 @@ I/O 多路复用使得程序能同时监听多个文件描述符，能够提高�
       2.同时每次调用poll都需要在内核便利传递进来的所有fd，开销较大; 
 ```
 
-![](https://github.com/ihbal61/LinuxLearning/blob/main/6.%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E7%9B%B8%E5%85%B3/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%EF%BC%88%E5%A4%9A%E8%B7%AF%E8%BD%AC%E6%8E%A5%EF%BC%89/poll.png)
+![](https://github.com/ihbal61/LinuxLearning/blob/main/6.%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B%E5%9F%BA%E7%A1%80/IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%EF%BC%88%E5%A4%9A%E8%B7%AF%E8%BD%AC%E6%8E%A5%EF%BC%89/poll.png)
 
 
 ## ***epoll***
