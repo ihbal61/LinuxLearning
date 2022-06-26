@@ -29,7 +29,9 @@ int main() {
     int num = 0;
     while(1) {
         char sendBuf[1024] = {0};
-        sprintf(sendBuf, "send data %d", num++);
+        // sprintf(sendBuf, "send data %d", num++);
+        fgets(sendBuf, sizeof(sendBuf), stdin);
+
         write(fd, sendBuf, strlen(sendBuf) + 1);
 
         // 接收
@@ -43,8 +45,6 @@ int main() {
             printf("服务器已经断开连接...\n");
             break;
         }
-        // sleep(1);
-        usleep(1000);
     }
 
     close(fd);

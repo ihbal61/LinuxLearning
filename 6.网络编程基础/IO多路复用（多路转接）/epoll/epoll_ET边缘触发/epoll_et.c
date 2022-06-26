@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/epoll.h>
+#include <fcntl.h>
+#include <errno.h>
 
 int main() {
 
@@ -51,26 +53,38 @@ int main() {
                 int len = sizeof(cliaddr);
                 int cfd = accept(lfd, (struct sockaddr *)&cliaddr, &len);
 
-                epev.events = EPOLLIN;
+                // 设置cfd属性非阻塞
+                int flag = fcntl(cfd, F_GETFL);
+                flag |= O_NONBLOCK;
+                fcntl(cfd, F_SETFL, flag);
+
+                epev.events = EPOLLIN | EPOLLET;    // 设置边沿触发
                 epev.data.fd = cfd;
                 epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &epev);
             } else {
                 if(epevs[i].events & EPOLLOUT) {
                     continue;
-                }   
-                // 有数据到达，需要通信
-                char buf[1024] = {0};
-                int len = read(curfd, buf, sizeof(buf));
-                if(len == -1) {
-                    perror("read");
-                    exit(-1);
-                } else if(len == 0) {
-                    printf("client closed...\n");
-                    epoll_ctl(epfd, EPOLL_CTL_DEL, curfd, NULL);
-                    close(curfd);
-                } else if(len > 0) {
-                    printf("read buf = %s\n", buf);
-                    write(curfd, buf, strlen(buf) + 1);
+                }  
+
+                // 循环读取出所有数据
+                char buf[5];
+                int len = 0;
+                while( (len = read(curfd, buf, sizeof(buf))) > 0) {
+                    // 打印数据
+                    // printf("recv data : %s\n", buf);
+                    write(STDOUT_FILENO, buf, len);
+                    write(curfd, buf, len);
+                }
+                if(len == 0) {
+                    printf("client closed....");
+                }else if(len == -1) {
+                    if(errno == EAGAIN) {
+                        printf("data over.....");
+                    }else {
+                        perror("read");
+                        exit(-1);
+                    }
+                    
                 }
 
             }
